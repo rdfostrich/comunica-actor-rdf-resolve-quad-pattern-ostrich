@@ -32,7 +32,7 @@ export class MockedOstrichDocument {
       return cb(this.error, null, 0);
     }
     const tripleIn = { subject, predicate, object };
-    const version = options.version;
+    const version = options.version === -1 ? Object.keys(this.triples).length - 1 : options.version;
     let i = 0;
     const triples: IStringQuad[] = [];
     for (const triple of this.triples[version]) {

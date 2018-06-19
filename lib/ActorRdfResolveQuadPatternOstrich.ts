@@ -68,8 +68,8 @@ export class ActorRdfResolveQuadPatternOstrich extends ActorRdfResolveQuadPatter
     if (action.pattern.graph.termType !== 'DefaultGraph') {
       throw new Error(this.name + ' can only perform versioned queries in the default graph.');
     }
-    if (!action.context.version
-      || (action.context.version.type !== 'version-materialization'
+    if (action.context.version
+      && (action.context.version.type !== 'version-materialization'
       && action.context.version.type !== 'delta-materialization'
       && action.context.version.type !== 'version-query')) {
       throw new Error(this.name + ' requires a version context.');
@@ -95,7 +95,7 @@ export class ActorRdfResolveQuadPatternOstrich extends ActorRdfResolveQuadPatter
   : Promise<IActorRdfResolveQuadPatternOutput> {
     // Attach totalItems to the output
     this.queries++;
-    (<OstrichQuadSource> source).setVersionContext(context.version);
+    (<OstrichQuadSource> source).setVersionContext(context.version || { type: 'version-materialization', version: -1 });
     const output: IActorRdfResolveQuadPatternOutput = await super.getOutput(source, pattern, context);
     output.data.on('end', () => {
       this.queries--;

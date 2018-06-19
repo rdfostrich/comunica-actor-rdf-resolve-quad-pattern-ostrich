@@ -164,6 +164,17 @@ describe('ActorRdfResolveQuadPatternOstrich', () => {
         });
     });
 
+    it('should run on ? ? ? with a falsy version context', () => {
+      return actor.run({ pattern, context: { sources: [{ type: 'ostrichFile', value: 'abc'  }], version: null } })
+        .then(async (output) => {
+          expect(await output.metadata()).toEqual({ totalItems: 2 });
+          expect(await arrayifyStream(output.data)).toEqual([
+            quad('s2', 'p1', 'o1'),
+            quad('s2', 'p1', 'o2'),
+          ]);
+        });
+    });
+
     it('should run on ? ? ? without data', () => {
       return actor.run({ pattern, context: { sources: [{ type: 'ostrichFile', value: 'abc'  }], version } })
         .then(async (output) => {
