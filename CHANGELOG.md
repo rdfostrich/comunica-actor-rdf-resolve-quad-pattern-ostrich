@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.1.0"></a>
+## [v1.1.0](https://github.com/rdfostrich/comunica-actor-rdf-resolve-quad-pattern-ostrich/compare/v1.0.0...v1.1.0) - 2018-10-04
+
+### Changed
+* [Update to comunica 1.4.0](https://github.com/rdfostrich/comunica-actor-rdf-resolve-quad-pattern-ostrich/commit/a60ebea3a06e496bb22e21f85f8c38766c8e36c1)
+* [Update component files](https://github.com/rdfostrich/comunica-actor-rdf-resolve-quad-pattern-ostrich/commit/c7a825c98d9b549a752dec66dbc6c6567f5ef580))
+
 <a name="v1.0.0"></a>
 ## [v1.0.0] - 2018-06-19
 
