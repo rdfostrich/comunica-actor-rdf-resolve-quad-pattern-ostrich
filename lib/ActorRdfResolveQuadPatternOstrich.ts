@@ -1,8 +1,9 @@
-import {ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput, ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
-import {IActorArgs, IActorTest} from "@comunica/core";
+import {
+  ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern,
+  IActorRdfResolveQuadPatternOutput, ILazyQuadSource, KEY_CONTEXT_SOURCE,
+} from "@comunica/bus-rdf-resolve-quad-pattern";
+import {ActionContext, IActorArgs, IActorTest} from "@comunica/core";
 import * as RDF from "rdf-js";
-import {Algebra} from "sparqlalgebrajs";
 import {OstrichQuadSource} from "./OstrichQuadSource";
 // TODO: Create OSTRICH typings
 const ostrich = require('ostrich-bindings'); // tslint:disable-line:no-var-requires
@@ -61,17 +62,18 @@ export class ActorRdfResolveQuadPatternOstrich extends ActorRdfResolveQuadPatter
   }
 
   public async test(action: IActionRdfResolveQuadPattern): Promise<IActorTest> {
-    if (!action.context || !action.context.sources || action.context.sources.length !== 1
-      || action.context.sources[0].type !== 'ostrichFile' || !action.context.sources[0].value) {
+    if (!action.context || !action.context.has(KEY_CONTEXT_SOURCE)
+      || action.context.get(KEY_CONTEXT_SOURCE).type !== 'ostrichFile'
+      || !action.context.get(KEY_CONTEXT_SOURCE).value) {
       throw new Error(this.name + ' requires a single source with a ostrichFile to be present in the context.');
     }
     if (action.pattern.graph.termType !== 'DefaultGraph') {
       throw new Error(this.name + ' can only perform versioned queries in the default graph.');
     }
-    if (action.context.version
-      && (action.context.version.type !== 'version-materialization'
-      && action.context.version.type !== 'delta-materialization'
-      && action.context.version.type !== 'version-query')) {
+    if (action.context.has(KEY_CONTEXT_VERSION)
+      && (action.context.get(KEY_CONTEXT_VERSION).type !== 'version-materialization'
+      && action.context.get(KEY_CONTEXT_VERSION).type !== 'delta-materialization'
+      && action.context.get(KEY_CONTEXT_VERSION).type !== 'version-query')) {
       throw new Error(this.name + ' requires a version context.');
     }
     return true;
@@ -83,19 +85,20 @@ export class ActorRdfResolveQuadPatternOstrich extends ActorRdfResolveQuadPatter
     }
   }
 
-  protected async getSource(context?: {[id: string]: any}): Promise<ILazyQuadSource> {
-    const ostrichFile: string = context.sources[0].value;
+  protected async getSource(context: ActionContext): Promise<ILazyQuadSource> {
+    const ostrichFile: string = context.get(KEY_CONTEXT_SOURCE).value;
     if (!this.ostrichDocuments[ostrichFile]) {
       await this.initializeOstrich(ostrichFile);
     }
     return new OstrichQuadSource(await this.ostrichDocuments[ostrichFile]);
   }
 
-  protected async getOutput(source: RDF.Source, pattern: RDF.Quad, context?: {[id: string]: any})
+  protected async getOutput(source: RDF.Source, pattern: RDF.Quad, context: ActionContext)
   : Promise<IActorRdfResolveQuadPatternOutput> {
     // Attach totalItems to the output
     this.queries++;
-    (<OstrichQuadSource> source).setVersionContext(context.version || { type: 'version-materialization', version: -1 });
+    (<OstrichQuadSource> source).setVersionContext(context.get(KEY_CONTEXT_VERSION)
+      || { type: 'version-materialization', version: -1 });
     const output: IActorRdfResolveQuadPatternOutput = await super.getOutput(source, pattern, context);
     output.data.on('end', () => {
       this.queries--;
@@ -147,3 +150,9 @@ export interface IVersionContextDm {
 export interface IVersionContextVersionQuery {
   type: 'version-query';
 }
+
+/**
+ * @type {string} Context entry for a version.
+ * @value {IDataSource} A source.
+ */
+export const KEY_CONTEXT_VERSION: string = '@comunica/actor-query-operation-contextify-version:version';

@@ -1,5 +1,4 @@
-import {BufferedIterator, BufferedIteratorOptions} from "asynciterator";
-import {blankNode, defaultGraph, literal, namedNode, triple, variable} from "rdf-data-model";
+import {BufferedIterator} from "asynciterator";
 import * as RDF from "rdf-js";
 import * as RdfString from "rdf-string";
 import {IStringQuad} from "rdf-string/lib/TermUtil";

@@ -1,4 +1,4 @@
-import {blankNode, defaultGraph, literal, namedNode, variable} from "rdf-data-model";
+import {namedNode, variable} from "@rdfjs/data-model";
 import {VersionContext} from "../lib/ActorRdfResolveQuadPatternOstrich";
 import {OstrichIterator} from "../lib/OstrichIterator";
 import {MockedOstrichDocument} from "../mocks/MockedOstrichDocument";
@@ -9,8 +9,8 @@ describe('OstrichIterator', () => {
   const vm0: VersionContext = { type: 'version-materialization', version: 0 };
   const dm01A: VersionContext = { type: 'delta-materialization', versionStart: 0, versionEnd: 1, queryAdditions: true };
   const dm23A: VersionContext = { type: 'delta-materialization', versionStart: 2, versionEnd: 3, queryAdditions: true };
-  const dm01D = { type: 'delta-materialization', versionStart: 0, versionEnd: 1, queryAdditions: false };
-  const dm23D = { type: 'delta-materialization', versionStart: 2, versionEnd: 3, queryAdditions: false };
+  const dm01D: VersionContext = { type: 'delta-materialization', versionStart: 0, versionEnd: 1, queryAdditions: false};
+  const dm23D: VersionContext = { type: 'delta-materialization', versionStart: 2, versionEnd: 3, queryAdditions: false};
   const vq: VersionContext = { type: 'version-query' };
   let ostrichDocument;
 

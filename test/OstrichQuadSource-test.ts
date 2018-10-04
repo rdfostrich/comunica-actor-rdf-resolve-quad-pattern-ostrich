@@ -1,4 +1,4 @@
-import {namedNode, quad, variable} from "rdf-data-model";
+import {namedNode, variable} from "@rdfjs/data-model";
 import {OstrichIterator} from "../lib/OstrichIterator";
 import {OstrichQuadSource} from "../lib/OstrichQuadSource";
 import {MockedOstrichDocument} from "../mocks/MockedOstrichDocument";
@@ -80,7 +80,8 @@ describe('OstrichQuadSource', () => {
     });
 
     it('should count DM', () => {
-      source.setVersionContext({ type: 'delta-materialization', versionStart: 0, versionEnd: 1 });
+      source.setVersionContext(
+        { type: 'delta-materialization', versionStart: 0, versionEnd: 1, queryAdditions: false });
       return expect(source.count(variable('v'), variable('v'), variable('v'))).resolves.toBe(4);
     });
 
