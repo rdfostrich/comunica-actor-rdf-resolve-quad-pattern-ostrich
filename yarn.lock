@@ -304,12 +304,11 @@
   dependencies:
     "@types/rdf-js" "^2.0.1"
 
-"@types/asynciterator@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@types/asynciterator/-/asynciterator-1.1.1.tgz#21ae5e3729ab2e87d324a044b2cd6288226da7fc"
-  integrity sha512-KgjXxTtWbMW7UA4oZauIfg2rCl5+5LbsoVF5DwwpXVQxzSbez2PQ9NAlbJlBjIHqKLOpWcdjqL+wyrNepvTZOg==
+"@types/asynciterator@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@types/asynciterator/-/asynciterator-1.1.2.tgz#56f05dcabadda94f033420f27da9e005eb67789f"
+  integrity sha512-J001n+xPBF0djcfWlgN/122rQtkV/44Qrp2bj1AFoJn2q5ddF4G6Zj6ZdnEcZnqvjGRCVZYERdnRbkv9kS436Q==
   dependencies:
-    "@types/events" "*"
     "@types/node" "*"
 
 "@types/babel__core@^7.1.0":
@@ -344,11 +343,6 @@
   integrity sha512-XYVgHF2sQ0YblLRMLNPB3CkFMewzFmlDsH/TneZFHUXDlABQgh88uOxuez7ZcXxayLFrqLwtDH1t+FmlFwNZxw==
   dependencies:
     "@babel/types" "^7.3.0"
-
-"@types/events@*":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@types/events/-/events-1.2.0.tgz#81a6731ce4df43619e5c8c945383b3e62a89ea86"
-  integrity sha512-KEIlhXnIutzKwRbQkGWb/I4HFqBuUykAdHgDED6xqwXJfONCjF5VoE0cXEiurh3XauygxzeDzgtXUqvLkxFzzA==
 
 "@types/istanbul-lib-coverage@^1.1.0":
   version "1.1.0"
