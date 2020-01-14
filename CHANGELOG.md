@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.1.1"></a>
+## [v1.1.1](https://github.com/rdfostrich/comunica-actor-rdf-resolve-quad-pattern-ostrich/compare/v1.1.0...v1.1.1) - 2020-01-14
+
+### Changed
+* [Update @types/node to version 13.1.0](https://github.com/rdfostrich/comunica-actor-rdf-resolve-quad-pattern-ostrich/commit/85e284992aca6dfa8bea6912a206a46c2b890113)
+* [Update sparqlalgebrajs to version 2.0.0](https://github.com/rdfostrich/comunica-actor-rdf-resolve-quad-pattern-ostrich/commit/bbe83b4ed434ba50aa56ffcde656c30488bd725b)
+
 <a name="v1.1.0"></a>
 ## [v1.1.0](https://github.com/rdfostrich/comunica-actor-rdf-resolve-quad-pattern-ostrich/compare/v1.0.0...v1.1.0) - 2018-10-04
 
