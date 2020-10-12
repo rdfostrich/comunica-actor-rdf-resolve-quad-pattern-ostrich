@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-resolve-quad-pattern-ostrich",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "An OSTRICH rdf-resolve-quad-pattern actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-ostrich",
   "lsd:components": "components/components.jsonld",
