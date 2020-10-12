@@ -6,8 +6,10 @@ import {
   VersionContext,
 } from "../lib/ActorRdfResolveQuadPatternOstrich";
 import {MockedOstrichDocument} from "../mocks/MockedOstrichDocument";
+import { DataFactory } from 'rdf-data-factory';
 const quad = require('rdf-quad');
 const arrayifyStream = require('arrayify-stream');
+const DF = new DataFactory();
 
 describe('ActorRdfResolveQuadPatternOstrich', () => {
   let bus;
@@ -177,7 +179,7 @@ describe('ActorRdfResolveQuadPatternOstrich', () => {
       return actor.run({ context: ActionContext(
           { [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'abc'  }, [KEY_CONTEXT_VERSION]: version }), pattern })
         .then(async (output) => {
-          expect(await output.metadata()).toEqual({ totalItems: 2 });
+          expect(await new Promise(resolve => output.data.getProperty('metadata', resolve))).toEqual({ totalItems: 2 });
           expect(await arrayifyStream(output.data)).toEqual([
             quad('s0', 'p1', 'o1'),
             quad('s0', 'p1', 'o2'),
@@ -189,7 +191,7 @@ describe('ActorRdfResolveQuadPatternOstrich', () => {
       return actor.run({ context: ActionContext(
           { [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'abc'  }, [KEY_CONTEXT_VERSION]: null }), pattern })
         .then(async (output) => {
-          expect(await output.metadata()).toEqual({ totalItems: 2 });
+          expect(await new Promise(resolve => output.data.getProperty('metadata', resolve))).toEqual({ totalItems: 2 });
           expect(await arrayifyStream(output.data)).toEqual([
             quad('s2', 'p1', 'o1'),
             quad('s2', 'p1', 'o2'),
@@ -201,7 +203,7 @@ describe('ActorRdfResolveQuadPatternOstrich', () => {
       return actor.run({ context: ActionContext(
           { [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'abc'  }, [KEY_CONTEXT_VERSION]: version }), pattern })
         .then(async (output) => {
-          expect(await output.metadata()).toEqual({ totalItems: 2 });
+          expect(await new Promise(resolve => output.data.getProperty('metadata', resolve))).toEqual({ totalItems: 2 });
         });
     });
 
@@ -214,7 +216,7 @@ describe('ActorRdfResolveQuadPatternOstrich', () => {
           pattern: patternThis,
         })
         .then(async (output) => {
-          expect(await output.metadata()).toEqual({ totalItems: 2 });
+          expect(await new Promise(resolve => output.data.getProperty('metadata', resolve))).toEqual({ totalItems: 2 });
           expect(await arrayifyStream(output.data)).toEqual([
             quad('s0', 'p1', 'o1'),
             quad('s0', 'p1', 'o2'),
@@ -231,7 +233,7 @@ describe('ActorRdfResolveQuadPatternOstrich', () => {
           pattern: patternThis,
         })
         .then(async (output) => {
-          expect(await output.metadata()).toEqual({ totalItems: 0 });
+          expect(await new Promise(resolve => output.data.getProperty('metadata', resolve))).toEqual({ totalItems: 0 });
           expect(await arrayifyStream(output.data)).toEqual([]);
         });
     });

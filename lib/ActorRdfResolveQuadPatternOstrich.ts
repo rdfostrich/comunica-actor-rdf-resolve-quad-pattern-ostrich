@@ -1,6 +1,6 @@
 import {
   ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput, ILazyQuadSource, KEY_CONTEXT_SOURCE,
+  IActorRdfResolveQuadPatternOutput, IQuadSource, KEY_CONTEXT_SOURCE,
 } from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, IActorArgs, IActorTest} from "@comunica/core";
 import * as RDF from "rdf-js";
@@ -85,7 +85,7 @@ export class ActorRdfResolveQuadPatternOstrich extends ActorRdfResolveQuadPatter
     }
   }
 
-  protected async getSource(context: ActionContext): Promise<ILazyQuadSource> {
+  protected async getSource(context: ActionContext): Promise<IQuadSource> {
     const ostrichFile: string = context.get(KEY_CONTEXT_SOURCE).value;
     if (!this.ostrichDocuments[ostrichFile]) {
       await this.initializeOstrich(ostrichFile);
@@ -93,7 +93,7 @@ export class ActorRdfResolveQuadPatternOstrich extends ActorRdfResolveQuadPatter
     return new OstrichQuadSource(await this.ostrichDocuments[ostrichFile]);
   }
 
-  protected async getOutput(source: RDF.Source, pattern: RDF.Quad, context: ActionContext)
+  protected async getOutput(source: IQuadSource, pattern: RDF.Quad, context: ActionContext)
   : Promise<IActorRdfResolveQuadPatternOutput> {
     // Attach totalItems to the output
     this.queries++;
@@ -106,8 +106,6 @@ export class ActorRdfResolveQuadPatternOstrich extends ActorRdfResolveQuadPatter
         this.close();
       }
     });
-    output.metadata = () => (<OstrichQuadSource> source).count(pattern.subject, pattern.predicate, pattern.object)
-      .then((totalItems: number) => ({ totalItems }));
     return output;
   }
 
