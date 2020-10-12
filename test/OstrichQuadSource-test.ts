@@ -1,7 +1,7 @@
-import {DataFactory} from "rdf-data-factory";
-import {OstrichIterator} from "../lib/OstrichIterator";
-import {OstrichQuadSource} from "../lib/OstrichQuadSource";
-import {MockedOstrichDocument} from "../mocks/MockedOstrichDocument";
+import { DataFactory } from 'rdf-data-factory';
+import { OstrichIterator } from '../lib/OstrichIterator';
+import { OstrichQuadSource } from '../lib/OstrichQuadSource';
+import { MockedOstrichDocument } from '../mocks/MockedOstrichDocument';
 const arrayifyStream = require('arrayify-stream');
 const DF = new DataFactory();
 
@@ -52,12 +52,8 @@ describe('OstrichQuadSource', () => {
 
     it('should return a OstrichIterator', () => {
       source.setVersionContext({ type: 'version-materialization', version: 0 });
-      return expect(source.match(DF.variable('v'), DF.variable('v'), DF.variable('v'), DF.defaultGraph())).toBeInstanceOf(OstrichIterator);
-    });
-
-    it('should return a OstrichIterator', () => {
-      source.setVersionContext({ type: 'version-materialization', version: 0 });
-      return expect(source.match(DF.variable('v'), DF.variable('v'), DF.variable('v'), DF.defaultGraph())).toBeInstanceOf(OstrichIterator);
+      return expect(source.match(DF.variable('v'), DF.variable('v'), DF.variable('v'), DF.defaultGraph()))
+        .toBeInstanceOf(OstrichIterator);
     });
 
     it('should count VM', () => {
@@ -67,7 +63,8 @@ describe('OstrichQuadSource', () => {
 
     it('should count DM', () => {
       source.setVersionContext(
-        { type: 'delta-materialization', versionStart: 0, versionEnd: 1, queryAdditions: false });
+        { type: 'delta-materialization', versionStart: 0, versionEnd: 1, queryAdditions: false },
+      );
       return expect(source.count(DF.variable('v'), DF.variable('v'), DF.variable('v'))).resolves.toBe(4);
     });
 
@@ -89,7 +86,8 @@ describe('OstrichQuadSource', () => {
       ostrichDocument.countTriplesVersion = (s, p, o, done) => {
         done(new Error('e'));
       };
-      return expect(arrayifyStream(source.match(DF.variable('v'), DF.variable('v'), DF.variable('v'), DF.defaultGraph())))
+      return expect(arrayifyStream(source
+        .match(DF.variable('v'), DF.variable('v'), DF.variable('v'), DF.defaultGraph())))
         .rejects.toEqual(new Error('e'));
     });
   });

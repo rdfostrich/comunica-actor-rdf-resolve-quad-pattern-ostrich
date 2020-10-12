@@ -1,15 +1,13 @@
-import {ActorRdfResolveQuadPattern, KEY_CONTEXT_SOURCE} from "@comunica/bus-rdf-resolve-quad-pattern";
-import {ActionContext, Bus} from "@comunica/core";
+import { ActorRdfResolveQuadPattern, KEY_CONTEXT_SOURCE } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { ActionContext, Bus } from '@comunica/core';
+import type { VersionContext } from '../lib/ActorRdfResolveQuadPatternOstrich';
 import {
   ActorRdfResolveQuadPatternOstrich,
   KEY_CONTEXT_VERSION,
-  VersionContext,
-} from "../lib/ActorRdfResolveQuadPatternOstrich";
-import {MockedOstrichDocument} from "../mocks/MockedOstrichDocument";
-import { DataFactory } from 'rdf-data-factory';
-const quad = require('rdf-quad');
+} from '../lib/ActorRdfResolveQuadPatternOstrich';
+import { MockedOstrichDocument } from '../mocks/MockedOstrichDocument';
 const arrayifyStream = require('arrayify-stream');
-const DF = new DataFactory();
+const quad = require('rdf-quad');
 
 describe('ActorRdfResolveQuadPatternOstrich', () => {
   let bus;
@@ -68,14 +66,14 @@ describe('ActorRdfResolveQuadPatternOstrich', () => {
 
     it('should test', () => {
       return expect(actor.test({
-        context: ActionContext({ [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'abc'  }, version }),
+        context: ActionContext({ [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'abc' }, version }),
         pattern,
       })).resolves.toBeTruthy();
     });
 
     it('should not test on the non-default graph', () => {
       return expect(actor.test({
-        context: ActionContext({ [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'abc'  }, version }),
+        context: ActionContext({ [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'abc' }, version }),
         pattern: quad('?', '?', '?', 'G'),
       })).rejects.toBeTruthy();
     });
@@ -86,7 +84,7 @@ describe('ActorRdfResolveQuadPatternOstrich', () => {
 
     it('should not test without a version context', () => {
       return expect(actor.test({
-        context: ActionContext({ [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'abc'  } }),
+        context: ActionContext({ [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'abc' }}),
         pattern: null,
       })).rejects.toBeTruthy();
     });
@@ -94,7 +92,7 @@ describe('ActorRdfResolveQuadPatternOstrich', () => {
     it('should not test with an invalid a version context', () => {
       return expect(actor.test({
         context: ActionContext({
-          [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'abc'  },
+          [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'abc' },
           [KEY_CONTEXT_VERSION]: { type: 'wrong' },
         }),
         pattern,
@@ -107,14 +105,14 @@ describe('ActorRdfResolveQuadPatternOstrich', () => {
 
     it('should not test on an invalid file', () => {
       return expect(actor.test({
-        context: ActionContext({ [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: null  } }),
+        context: ActionContext({ [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: null }}),
         pattern,
       })).rejects.toBeTruthy();
     });
 
     it('should not test on no file', () => {
       return expect(actor.test({
-        context: ActionContext({ [KEY_CONTEXT_SOURCE]: { type: 'entrypoint', value: null  } }),
+        context: ActionContext({ [KEY_CONTEXT_SOURCE]: { type: 'entrypoint', value: null }}),
         pattern,
       })).rejects.toBeTruthy();
     });
@@ -134,22 +132,26 @@ describe('ActorRdfResolveQuadPatternOstrich', () => {
 
     it('should allow a OSTRICH quad source to be created for a context with a valid file', () => {
       return expect((<any> actor).getSource(ActionContext(
-        { [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'myFile'  } }))).resolves.toBeTruthy();
+        { [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'myFile' }},
+      ))).resolves.toBeTruthy();
     });
 
     it('should fail on creating a OSTRICH quad source for a context with an invalid file', () => {
       return expect((<any> actor).getSource(ActionContext(
-        { [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: null  } }))).rejects.toBeTruthy();
+        { [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: null }},
+      ))).rejects.toBeTruthy();
     });
 
     it('should create only a OSTRICH quad source only once per file', () => {
       let doc1 = null;
       return (<any> actor).getSource(ActionContext(
-        { [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'myFile'  } }))
+        { [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'myFile' }},
+      ))
         .then((file: any) => {
           doc1 = file.ostrichDocument;
           return (<any> actor).getSource(ActionContext(
-            { [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'myFile'  } }));
+            { [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'myFile' }},
+          ));
         }).then((file: any) => {
           expect(file.ostrichDocument).toBe(doc1);
         });
@@ -158,27 +160,31 @@ describe('ActorRdfResolveQuadPatternOstrich', () => {
     it('should create different documents in OSTRICH quad source for different files', () => {
       let doc1 = null;
       return (<any> actor).getSource(ActionContext(
-        { [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'myFile1'  } }))
+        { [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'myFile1' }},
+      ))
         .then((file: any) => {
           doc1 = file.ostrichDocument;
           require('ostrich-bindings').__setMockedDocument(new MockedOstrichDocument([]));
           return (<any> actor).getSource(ActionContext(
-            { [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'myFile2'  } }));
+            { [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'myFile2' }},
+          ));
         }).then((file: any) => {
           expect(file.ostrichDocument).not.toBe(doc1);
         });
     });
 
-    it('should initialize OSTRICH sources when passed to the constructor', async () => {
-      const myActor = new ActorRdfResolveQuadPatternOstrich({ name: 'actor', bus, ostrichFiles: ['myFile'] });
+    it('should initialize OSTRICH sources when passed to the constructor', async() => {
+      const myActor = new ActorRdfResolveQuadPatternOstrich({ name: 'actor', bus, ostrichFiles: [ 'myFile' ]});
       await myActor.initialize();
-      return expect(myActor.ostrichDocuments.myFile).resolves.toBeInstanceOf(MockedOstrichDocument);
+      await expect(myActor.ostrichDocuments.myFile).resolves.toBeInstanceOf(MockedOstrichDocument);
     });
 
     it('should run on ? ? ?', () => {
       return actor.run({ context: ActionContext(
-          { [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'abc'  }, [KEY_CONTEXT_VERSION]: version }), pattern })
-        .then(async (output) => {
+        { [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'abc' }, [KEY_CONTEXT_VERSION]: version },
+      ),
+      pattern })
+        .then(async output => {
           expect(await new Promise(resolve => output.data.getProperty('metadata', resolve))).toEqual({ totalItems: 2 });
           expect(await arrayifyStream(output.data)).toEqual([
             quad('s0', 'p1', 'o1'),
@@ -189,8 +195,10 @@ describe('ActorRdfResolveQuadPatternOstrich', () => {
 
     it('should run on ? ? ? with a falsy version context', () => {
       return actor.run({ context: ActionContext(
-          { [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'abc'  }, [KEY_CONTEXT_VERSION]: null }), pattern })
-        .then(async (output) => {
+        { [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'abc' }, [KEY_CONTEXT_VERSION]: null },
+      ),
+      pattern })
+        .then(async output => {
           expect(await new Promise(resolve => output.data.getProperty('metadata', resolve))).toEqual({ totalItems: 2 });
           expect(await arrayifyStream(output.data)).toEqual([
             quad('s2', 'p1', 'o1'),
@@ -201,8 +209,10 @@ describe('ActorRdfResolveQuadPatternOstrich', () => {
 
     it('should run on ? ? ? without data', () => {
       return actor.run({ context: ActionContext(
-          { [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'abc'  }, [KEY_CONTEXT_VERSION]: version }), pattern })
-        .then(async (output) => {
+        { [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'abc' }, [KEY_CONTEXT_VERSION]: version },
+      ),
+      pattern })
+        .then(async output => {
           expect(await new Promise(resolve => output.data.getProperty('metadata', resolve))).toEqual({ totalItems: 2 });
         });
     });
@@ -212,10 +222,12 @@ describe('ActorRdfResolveQuadPatternOstrich', () => {
       return actor.run(
         {
           context: ActionContext(
-            { [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'abc'  }, [KEY_CONTEXT_VERSION]: version }),
+            { [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'abc' }, [KEY_CONTEXT_VERSION]: version },
+          ),
           pattern: patternThis,
-        })
-        .then(async (output) => {
+        },
+      )
+        .then(async output => {
           expect(await new Promise(resolve => output.data.getProperty('metadata', resolve))).toEqual({ totalItems: 2 });
           expect(await arrayifyStream(output.data)).toEqual([
             quad('s0', 'p1', 'o1'),
@@ -229,10 +241,12 @@ describe('ActorRdfResolveQuadPatternOstrich', () => {
       return actor.run(
         {
           context: ActionContext(
-            { [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'abc'  }, [KEY_CONTEXT_VERSION]: version }),
+            { [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'abc' }, [KEY_CONTEXT_VERSION]: version },
+          ),
           pattern: patternThis,
-        })
-        .then(async (output) => {
+        },
+      )
+        .then(async output => {
           expect(await new Promise(resolve => output.data.getProperty('metadata', resolve))).toEqual({ totalItems: 0 });
           expect(await arrayifyStream(output.data)).toEqual([]);
         });
@@ -253,10 +267,12 @@ describe('ActorRdfResolveQuadPatternOstrich', () => {
       return actor.run(
         {
           context: ActionContext(
-            { [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'abc'  }, [KEY_CONTEXT_VERSION]: version }),
+            { [KEY_CONTEXT_SOURCE]: { type: 'ostrichFile', value: 'abc' }, [KEY_CONTEXT_VERSION]: version },
+          ),
           pattern: patternThis,
-        })
-        .then(async (output) => {
+        },
+      )
+        .then(async output => {
           expect(await arrayifyStream(output.data)).toBeTruthy();
           expect((<any> actor).shouldClose).toBe(false);
           expect(actor.closed).toBe(true);
@@ -276,15 +292,15 @@ describe('ActorRdfResolveQuadPatternOstrich', () => {
       return expect(() => actor.deinitialize()).not.toThrow();
     });
 
-    it('should close on process.exit', () => {
-      actor.deinitialize();
+    it('should close on process.exit', async() => {
+      await actor.deinitialize();
       process.emit('exit', 0);
       expect(actor.closed).toBe(true);
       actor.closed = false;
     });
 
-    it('should close on process.SIGINT', () => {
-      actor.deinitialize();
+    it('should close on process.SIGINT', async() => {
+      await actor.deinitialize();
       process.emit(<any> 'SIGINT');
       expect(actor.closed).toBe(true);
       actor.closed = false;

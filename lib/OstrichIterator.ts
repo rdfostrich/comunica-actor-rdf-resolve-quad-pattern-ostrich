@@ -1,11 +1,10 @@
-import {BufferedIterator} from "asynciterator";
-import * as RDF from "rdf-js";
-import * as RdfString from "rdf-string";
-import {IStringQuad} from "rdf-string/lib/TermUtil";
-import {VersionContext} from "./ActorRdfResolveQuadPatternOstrich";
+import { BufferedIterator } from 'asynciterator';
+import type * as RDF from 'rdf-js';
+import * as RdfString from 'rdf-string';
+import type { IStringQuad } from 'rdf-string/lib/TermUtil';
+import type { VersionContext } from './ActorRdfResolveQuadPatternOstrich';
 
 export class OstrichIterator extends BufferedIterator<RDF.Quad> {
-
   protected readonly ostrichDocument: any;
   protected readonly versionContext: VersionContext;
   protected readonly subject?: string;
@@ -14,8 +13,8 @@ export class OstrichIterator extends BufferedIterator<RDF.Quad> {
 
   protected reading: boolean;
 
-  constructor(ostrichDocument: any, versionContext: VersionContext,
-              subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, options?: any) {
+  public constructor(ostrichDocument: any, versionContext: VersionContext,
+    subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, options?: any) {
     super(options);
     this.ostrichDocument = ostrichDocument;
     this.versionContext = versionContext;
@@ -39,30 +38,35 @@ export class OstrichIterator extends BufferedIterator<RDF.Quad> {
       if (error) {
         this.emit('error', error);
         return done();
-      } else {
-        if (this.versionContext.type === 'delta-materialization') {
-          const queryAdditions = this.versionContext.queryAdditions;
-          triples = triples.filter((t) => (<any> t).addition === queryAdditions);
-        }
-        triples
-          .map((t) => RdfString.stringQuadToQuad(t))
-          .forEach((t) => this._push(t));
-        this.close();
       }
+      if (this.versionContext.type === 'delta-materialization') {
+        const queryAdditions = this.versionContext.queryAdditions;
+        triples = triples.filter(t => (<any> t).addition === queryAdditions);
+      }
+      triples
+        .map(t => RdfString.stringQuadToQuad(t))
+        .forEach(t => this._push(t));
+      this.close();
+
       done();
     });
   }
 
-  protected query(done: (error: Error, triples: IStringQuad[], totalItems: number) => void) {
+  protected query(done: (error: Error, triples: IStringQuad[], totalItems: number) => void): void {
     if (this.versionContext.type === 'version-materialization') {
-      this.ostrichDocument.searchTriplesVersionMaterialized(this.subject, this.predicate, this.object,
-        { version: this.versionContext.version }, done);
+      this.ostrichDocument.searchTriplesVersionMaterialized(this.subject,
+        this.predicate,
+        this.object,
+        { version: this.versionContext.version },
+        done);
     } else if (this.versionContext.type === 'delta-materialization') {
-      this.ostrichDocument.searchTriplesDeltaMaterialized(this.subject, this.predicate, this.object,
-        { versionEnd: this.versionContext.versionEnd, versionStart: this.versionContext.versionStart }, done);
+      this.ostrichDocument.searchTriplesDeltaMaterialized(this.subject,
+        this.predicate,
+        this.object,
+        { versionEnd: this.versionContext.versionEnd, versionStart: this.versionContext.versionStart },
+        done);
     } else {
       this.ostrichDocument.searchTriplesVersion(this.subject, this.predicate, this.object, {}, done);
     }
   }
-
 }

@@ -1,33 +1,32 @@
-import {IStringQuad} from "rdf-string/lib/TermUtil";
+import type { IStringQuad } from 'rdf-string/lib/TermUtil';
 
 export class MockedOstrichDocument {
+  public closed = false;
 
-  public closed: boolean = false;
-
-  private readonly triples: {[version: number]: IStringQuad[]};
+  private readonly triples: Record<number, IStringQuad[]>;
   private error: Error = null;
 
-  constructor(triples: {[version: number]: IStringQuad[]}) {
+  public constructor(triples: Record<number, IStringQuad[]>) {
     this.triples = triples;
   }
 
-  protected static triplesMatch(a: IStringQuad, b: IStringQuad): boolean {
-    return MockedOstrichDocument.termsMatch(a.subject, b.subject)
-      && MockedOstrichDocument.termsMatch(a.predicate, b.predicate)
-      && MockedOstrichDocument.termsMatch(a.object, b.object);
+  protected static triplesMatch(left: IStringQuad, right: IStringQuad): boolean {
+    return MockedOstrichDocument.termsMatch(left.subject, right.subject) &&
+      MockedOstrichDocument.termsMatch(left.predicate, right.predicate) &&
+      MockedOstrichDocument.termsMatch(left.object, right.object);
   }
 
-  protected static termsMatch(a: string, b: string): boolean {
-    return MockedOstrichDocument.isVariable(a) || MockedOstrichDocument.isVariable(b) || a === b;
+  protected static termsMatch(left: string, right: string): boolean {
+    return MockedOstrichDocument.isVariable(left) || MockedOstrichDocument.isVariable(right) || left === right;
   }
 
-  protected static isVariable(a: string): boolean {
-    return !a || a.charAt(0) === '?' || a.charAt(0) === '_';
+  protected static isVariable(term: string): boolean {
+    return !term || term.startsWith('?') || term.startsWith('_');
   }
 
   public searchTriplesVersionMaterialized(subject: string, predicate: string, object: string,
-                                          options: {[id: string]: any},
-                                          cb: (error: Error, triples: IStringQuad[], totalItems: number) => void) {
+    options: Record<string, any>,
+    cb: (error: Error, triples: IStringQuad[], totalItems: number) => void): void {
     if (this.error) {
       return cb(this.error, null, 0);
     }
@@ -45,16 +44,19 @@ export class MockedOstrichDocument {
   }
 
   public countTriplesVersionMaterialized(subject: string, predicate: string, object: string, version: number,
-                                         cb: (error: Error, totalItems: number) => any) {
-    this.searchTriplesVersionMaterialized(subject, predicate, object, { version },
+    cb: (error: Error, totalItems: number) => any): void {
+    this.searchTriplesVersionMaterialized(subject,
+      predicate,
+      object,
+      { version },
       (error: Error, triples: IStringQuad[]) => {
         cb(error, triples.length);
       });
   }
 
   public searchTriplesDeltaMaterialized(subject: string, predicate: string, object: string,
-                                        options: {[id: string]: any},
-                                        cb: (error: Error, triples: IStringQuad[], totalItems: number) => void) {
+    options: Record<string, any>,
+    cb: (error: Error, triples: IStringQuad[], totalItems: number) => void): void {
     if (this.error) {
       return cb(this.error, null, 0);
     }
@@ -109,17 +111,20 @@ export class MockedOstrichDocument {
   }
 
   public countTriplesDeltaMaterialized(subject: string, predicate: string, object: string,
-                                       versionStart: number, versionEnd: number,
-                                       cb: (error: Error, totalItems: number) => any) {
-    this.searchTriplesDeltaMaterialized(subject, predicate, object, { versionStart, versionEnd },
+    versionStart: number, versionEnd: number,
+    cb: (error: Error, totalItems: number) => any): void {
+    this.searchTriplesDeltaMaterialized(subject,
+      predicate,
+      object,
+      { versionStart, versionEnd },
       (error: Error, triples: IStringQuad[]) => {
         cb(error, triples.length);
       });
   }
 
   public searchTriplesVersion(subject: string, predicate: string, object: string,
-                              options: {[id: string]: any},
-                              cb: (error: Error, triples: IStringQuad[], totalItems: number) => void) {
+    options: Record<string, any>,
+    cb: (error: Error, triples: IStringQuad[], totalItems: number) => void): void {
     if (this.error) {
       return cb(this.error, null, 0);
     }
@@ -129,7 +134,7 @@ export class MockedOstrichDocument {
     for (const version in this.triples) {
       for (const triple of this.triples[version]) {
         if (MockedOstrichDocument.triplesMatch(tripleIn, triple)) {
-          (<any> triple).versions = [version];
+          (<any> triple).versions = [ version ];
           triples.push(triple);
           i++;
         }
@@ -139,18 +144,17 @@ export class MockedOstrichDocument {
   }
 
   public countTriplesVersion(subject: string, predicate: string, object: string,
-                             cb: (error: Error, totalItems: number) => any) {
-    this.searchTriplesVersion(subject, predicate, object, {},
-      (error: Error, triples: IStringQuad[]) => {
-        cb(error, triples.length);
-      });
+    cb: (error: Error, totalItems: number) => any): void {
+    this.searchTriplesVersion(subject, predicate, object, {}, (error: Error, triples: IStringQuad[]) => {
+      cb(error, triples.length);
+    });
   }
 
-  public close() {
+  public close(): void {
     this.closed = true;
   }
 
-  public setError(error: Error) {
+  public setError(error: Error): void {
     this.error = error;
   }
 }
