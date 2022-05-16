@@ -35,7 +35,7 @@
     "index.js"
   ],
   "dependencies": {
-    "@types/node": "^13.1.0",
+    "@types/node": "^16.0.0",
     "ostrich-bindings": "^1.2.3",
     "rdf-data-factory": "^1.0.3",
     "rdf-string": "^1.5.0"
