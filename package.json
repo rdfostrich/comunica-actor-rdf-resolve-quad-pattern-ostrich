@@ -65,7 +65,7 @@
     "manual-git-changelog": "^1.0.0",
     "pre-commit": "^1.2.2",
     "rdf-quad": "^1.5.0",
-    "sparqlalgebrajs": "^2.4.0",
+    "sparqlalgebrajs": "^4.0.0",
     "ts-jest": "^26.0.0",
     "typescript": "^4.0.0"
   },
