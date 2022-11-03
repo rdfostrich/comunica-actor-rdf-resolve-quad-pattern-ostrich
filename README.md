@@ -1,3 +1,7 @@
+# DEPRECATED in favor of https://github.com/comunica/comunica-feature-versioning
+
+-----
+
 # Comunica OSTRICH RDF Resolve Quad Pattern Actor
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-rdf-resolve-quad-pattern-ostrich.svg)](https://www.npmjs.com/package/@comunica/actor-rdf-resolve-quad-pattern-ostrich)
